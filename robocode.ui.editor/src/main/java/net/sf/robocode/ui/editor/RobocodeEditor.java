@@ -135,6 +135,7 @@ public class RobocodeEditor extends JFrame implements Runnable, IRobocodeEditor 
 	}
 
 	public static void loadTemplateContent(String templateName) {
+		String template = "";
 		File f = new File(FileUtil.getCwd(), templateName);
 		int size = (int) (f.length());
 		byte[] buff = new byte[size];
