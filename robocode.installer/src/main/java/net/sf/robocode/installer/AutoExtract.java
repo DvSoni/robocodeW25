@@ -538,6 +538,18 @@ public class AutoExtract implements ActionListener {
         }
     }
 
+    private void writeShortcut(PrintStream out, String folder, String name, String installPath, String runnable) {
+        out.println("Set link = Shell.CreateShortcut(ProgramsPath + \"\\\\" + folder + "\\\\" + name + ".lnk\")");
+        out.println("link.Arguments = \"\"");
+        out.println("link.Description = \"" + name + "\"");
+        out.println("link.HotKey = \"\"");
+        out.println("link.IconLocation = \"" + escaped(installPath) + "\\\\" + "robocode.ico,0\"");
+        out.println("link.TargetPath = \"" + escaped(installPath) + "\\\\" + runnable + "\"");
+        out.println("link.WindowStyle = 1");
+        out.println("link.WorkingDirectory = \"" + escaped(installPath) + "\"");
+        out.println("link.Save()");
+    }
+    
     private boolean createWindowsShortcuts(File installDir, String runnable, String folder, String name) {
         int rc = isSilent ? JOptionPane.YES_NO_OPTION
                 : JOptionPane.showConfirmDialog(null,
@@ -561,25 +573,13 @@ public class AutoExtract implements ActionListener {
             out.println("if (not(fso.folderExists(ProgramsPath + \"\\\\" + folder + "\"))) Then");
             out.println("	fso.CreateFolder(ProgramsPath + \"\\\\" + folder + "\")");
             out.println("End If");
-            out.println("Set link = Shell.CreateShortcut(ProgramsPath + \"\\\\" + folder + "\\\\" + name + ".lnk\")");
-            out.println("link.Arguments = \"\"");
-            out.println("link.Description = \"" + name + "\"");
-            out.println("link.HotKey = \"\"");
-            out.println("link.IconLocation = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + "robocode.ico,0\"");
-            out.println("link.TargetPath = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + runnable + "\"");
-            out.println("link.WindowStyle = 1");
-            out.println("link.WorkingDirectory = \"" + escaped(installDir.getAbsolutePath()) + "\"");
-            out.println("link.Save()");
+            // Call the helper method for Start Menu shortcut
+            writeShortcut(out, folder, name, installDir.getAbsolutePath(), runnable);
+
             out.println("DesktopPath = Shell.SpecialFolders(\"Desktop\")");
-            out.println("Set link = Shell.CreateShortcut(DesktopPath + \"\\\\" + name + ".lnk\")");
-            out.println("link.Arguments = \"\"");
-            out.println("link.Description = \"" + name + "\"");
-            out.println("link.HotKey = \"\"");
-            out.println("link.IconLocation = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + "robocode.ico,0\"");
-            out.println("link.TargetPath = \"" + escaped(installDir.getAbsolutePath()) + "\\\\" + runnable + "\"");
-            out.println("link.WindowStyle = 1");
-            out.println("link.WorkingDirectory = \"" + escaped(installDir.getAbsolutePath()) + "\"");
-            out.println("link.Save()");
+
+            // Call the helper method for Desktop shortcut
+            writeShortcut(out, "", name, installDir.getAbsolutePath(), runnable);
             out.println("WScript.Echo(\"Shortcuts created.\")");
 
             out.close();
