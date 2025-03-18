@@ -416,5 +416,6 @@ public class BattleManager implements IBattleManager {
 		if (battle != null && battle.isRunning() && !isPaused() && battle instanceof Battle) {
 			((Battle) battle).sendInteractiveEvent(event);
 		}
+
 	}
 }
