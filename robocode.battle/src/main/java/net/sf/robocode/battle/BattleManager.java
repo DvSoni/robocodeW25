@@ -415,7 +415,8 @@ public class BattleManager implements IBattleManager {
 
 	public synchronized void sendInteractiveEvent(Event event) {
 		if (battle != null && battle.isRunning() && !isPaused() && battle instanceof Battle) {
-			((Battle) battle).sendInteractiveEvent(event);
+			Battle battleInstance = (Battle) battle;
+			battleInstance.sendInteractiveEvent(event);
 		}
 	}
 }
