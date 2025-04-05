@@ -24,17 +24,18 @@ import java.util.stream.Stream;
  * @author Mathew A. Nelson (original)
  * @author Flemming N. Larsen (contributor)
  */
-public class FileUtil {  // ✅ Compliant
-	private FileUtil() {
-		throw new IllegalStateException("Utility class - instantiation is not allowed");
-	}
+public class FileUtil {
 
+	// Current working directory
 	private static File cwd;
 
+	// Initializes the current working directory
 	static {
 		try {
 			final String wd = System.getProperty("WORKINGDIRECTORY", "");
-		} catch (Exception e) {
+
+			FileUtil.setCwd(new File(wd));
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
