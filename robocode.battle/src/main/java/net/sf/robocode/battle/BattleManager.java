@@ -410,7 +410,7 @@ public class BattleManager implements IBattleManager {
 	public synchronized void setSGPaintEnabled(int robotIndex, boolean enable) {
 		if (battle != null && battle.isRunning() && !isPaused() && battle instanceof Battle) {
 			Battle battleInstance = (Battle) battle;
-			battleInstance.sendInteractiveEvent(event);
+			battleInstance.setSGPaintEnabled(robotIndex, enable);
 		}
 	}
 
