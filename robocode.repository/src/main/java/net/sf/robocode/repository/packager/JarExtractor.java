@@ -7,7 +7,6 @@
  */
 package net.sf.robocode.repository.packager;
 
-
 import net.sf.robocode.io.FileUtil;
 import net.sf.robocode.io.Logger;
 import net.sf.robocode.io.URLJarCollector;
@@ -22,7 +21,6 @@ import java.util.jar.JarInputStream;
 import java.util.jar.JarEntry;
 import java.net.URLConnection;
 import java.net.URL;
-
 
 /**
  * @author Pavel Savara (original)
@@ -66,11 +64,21 @@ public class JarExtractor {
 
 	public static void extractFile(File dest, JarInputStream jarIS, JarEntry entry) throws IOException {
 		File out = new File(dest, entry.getName());
-		File parentDirectory = new File(out.getParent());
 
+		// Protect against path traversal
+		String canonicalDestPath = dest.getCanonicalPath();
+		String canonicalOutPath = out.getCanonicalPath();
+
+		if (!canonicalOutPath.startsWith(canonicalDestPath + File.separator)) {
+			Logger.logError("Blocked path traversal attempt: " + canonicalOutPath);
+			return;
+		}
+
+		File parentDirectory = new File(out.getParent());
 		if (!parentDirectory.exists() && !parentDirectory.mkdirs()) {
 			Logger.logError("Cannot create dir: " + parentDirectory);
 		}
+
 		FileOutputStream fos = null;
 		BufferedOutputStream bos = null;
 		byte[] buf = new byte[2048];
@@ -80,7 +88,6 @@ public class JarExtractor {
 			bos = new BufferedOutputStream(fos);
 
 			int num;
-
 			while ((num = jarIS.read(buf, 0, 2048)) != -1) {
 				bos.write(buf, 0, num);
 			}
