@@ -7,7 +7,6 @@
  */
 package net.sf.robocode.test.robots;
 
-
 import net.sf.robocode.test.helpers.Assert;
 import net.sf.robocode.test.helpers.RobocodeTestBed;
 import static org.hamcrest.CoreMatchers.is;
@@ -15,7 +14,6 @@ import org.junit.Test;
 import robocode.control.events.RoundStartedEvent;
 import robocode.control.events.TurnEndedEvent;
 import robocode.control.snapshot.IRobotSnapshot;
-
 
 /**
  * Repeatable robot possition test
@@ -66,15 +64,15 @@ public class TestPosition extends RobocodeTestBed {
 
 		if (lastTurn == 1700) {
 			/*
-			Assert.assertNear(373.9958377, crazy.getX());
-			Assert.assertNear(196.1380677, crazy.getY());
-			Assert.assertNear(340.3212984, target.getX());
-			Assert.assertNear(456.5502002, target.getY());
-
+			 * Assert.assertNear(373.9958377, crazy.getX());
+			 * Assert.assertNear(196.1380677, crazy.getY());
+			 * Assert.assertNear(340.3212984, target.getX());
+			 * Assert.assertNear(456.5502002, target.getY());
+			 * 
 			 */
 
-			System.out.println("Crazy X: " + crazy.getX() + ", Y: " + crazy.getY());
-			System.out.println("Target X: " + target.getX() + ", Y: " + target.getY());
+			// System.out.println("Crazy X: " + crazy.getX() + ", Y: " + crazy.getY());
+			// System.out.println("Target X: " + target.getX() + ", Y: " + target.getY());
 
 			// Updated based on actual observed values
 			Assert.assertNear(126.7474, crazy.getX());
@@ -86,8 +84,10 @@ public class TestPosition extends RobocodeTestBed {
 
 	@Override
 	protected void runTeardown() {
-		Assert.assertThat("Unexpected number of turns", lastTurn, is(3077));
-		//Assert.assertThat(lastTurn, is(2080));
+		// Assert.assertThat("Unexpected number of turns", lastTurn, is(3077));
+		Assert.assertThat(lastTurn, is(3077));
+
+		// Assert.assertThat(lastTurn, is(2080));
 	}
 
 }
