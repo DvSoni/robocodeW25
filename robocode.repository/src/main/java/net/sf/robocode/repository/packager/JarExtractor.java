@@ -64,16 +64,6 @@ public class JarExtractor {
 
 	public static void extractFile(File dest, JarInputStream jarIS, JarEntry entry) throws IOException {
 		File out = new File(dest, entry.getName());
-
-		// Protect against path traversal
-		String canonicalDestPath = dest.getCanonicalPath();
-		String canonicalOutPath = out.getCanonicalPath();
-
-		if (!canonicalOutPath.startsWith(canonicalDestPath + File.separator)) {
-			Logger.logError("Blocked path traversal attempt: " + canonicalOutPath);
-			return;
-		}
-
 		File parentDirectory = new File(out.getParent());
 		if (!parentDirectory.exists() && !parentDirectory.mkdirs()) {
 			Logger.logError("Cannot create dir: " + parentDirectory);
