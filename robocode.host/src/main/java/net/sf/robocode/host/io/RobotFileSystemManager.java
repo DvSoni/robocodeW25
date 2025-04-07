@@ -295,7 +295,17 @@ public class RobotFileSystemManager {
 				os = null;
 				try {
 					is = jarFile.getInputStream(jarEntry);
-					os = new FileOutputStream(new File(parent, filename));
+					File targetFile = new File(parent, filename);
+					String canonicalParentPath = parent.getCanonicalPath();
+					String canonicalTargetPath = targetFile.getCanonicalPath();
+
+					if (!canonicalTargetPath.startsWith(canonicalParentPath + File.separator)) {
+						Logger.logError("Blocked potential path traversal: " + filename);
+						continue; // Skip writing this file
+					}
+
+					os = new FileOutputStream(targetFile);
+
 					copyStream(is, os);
 				} finally {
 					FileUtil.cleanupStream(is);
