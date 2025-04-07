@@ -495,8 +495,6 @@ public class AutoExtract implements ActionListener {
             System.err.println("Error while deleting old libs: " + e.getMessage());
         }
     }
-
-
     public static boolean deleteRecursively(File file) {
         if (file.isDirectory()) {
             File[] children = file.listFiles();
