@@ -436,7 +436,9 @@ public class AutoExtract implements ActionListener {
             // renaming files containing ".data/_" into ".data"
             if (robotsDataDir.exists()) {
                 File underScoreDir = new File(robotsDataDir, "_");
-                String[] list = underScoreDir.list();
+                // String[] list = underScoreDir.list();
+                if (underScoreDir.exists() && underScoreDir.isDirectory()) {
+                    String[] list = underScoreDir.list();
 
                 if (list != null) {
                     for (String fileName : list) {
@@ -446,6 +448,7 @@ public class AutoExtract implements ActionListener {
                     }
                     underScoreDir.delete();
                 }
+            }
             }
 
             // Create shortcuts and file associations
