@@ -7,7 +7,6 @@
  */
 package net.sf.robocode.repository.root;
 
-
 import net.sf.robocode.host.security.ClassAnalyzer;
 import net.sf.robocode.host.security.ClassFileReader;
 import net.sf.robocode.io.FileUtil;
@@ -30,7 +29,7 @@ import java.net.URLConnection;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
-
+import java.util.regex.Pattern;
 
 /**
  * Represents a JAR file.
@@ -104,8 +103,19 @@ public final class JarRoot extends BaseRoot implements IRepositoryRoot {
 		}
 	}
 
-	private void readJarStream(Collection<IRepositoryItem> repositoryItems, String root, JarInputStream jarIS) throws IOException {
+	private void readJarStream(Collection<IRepositoryItem> repositoryItems, String root, JarInputStream jarIS)
+			throws IOException {
+		if (!isValidURL(root)) {
+			Logger.logError("Invalid root URL: " + root + ". Skipping processing of this JAR entry.");
+			return;
+		}
+
 		final URL rootURL = new URL(root + "!/");
+
+		if (!isValidURL(rootURL.toString())) {
+			Logger.logError("Invalid rootURL for ClassAnalyzer: " + rootURL.toString() + ". Skipping class analysis.");
+			return;
+		}
 
 		ClassAnalyzer.RobotMainClassPredicate mainClassPredicate = ClassFileReader.createMainClassPredicate(rootURL);
 
@@ -126,7 +136,7 @@ public final class JarRoot extends BaseRoot implements IRepositoryRoot {
 							readJarStream(repositoryItems, "jar:jar" + root + JarJar.SEPARATOR + fullName, inner);
 						} finally {
 							if (inner != null) {
-								inner.closeEntry();								
+								inner.closeEntry();
 							}
 						}
 					} else if (name.endsWith(".class")) {
@@ -149,7 +159,7 @@ public final class JarRoot extends BaseRoot implements IRepositoryRoot {
 
 			if (repositoryItem != null) {
 				if (repositoryItem instanceof RobotItem) {
-					RobotItem robotItem = (RobotItem) repositoryItem; 
+					RobotItem robotItem = (RobotItem) repositoryItem;
 
 					robotItem.setClassPathURL(root);
 				}
@@ -182,6 +192,23 @@ public final class JarRoot extends BaseRoot implements IRepositoryRoot {
 
 	public void extractJAR() {
 		JarExtractor.extractJar(rootURL);
+	}
+
+	private boolean isValidURL(String url) {
+		Pattern dangerousProtocols = Pattern.compile("^(file|gopher|ftp|data|javascript):", Pattern.CASE_INSENSITIVE);
+		if (dangerousProtocols.matcher(url).find()) {
+			return false;
+		}
+
+		// Allow only http and https and localhost
+		Pattern allowedProtocolsAndHosts = Pattern
+				.compile("^(https?://(localhost(:\\d+)?|127\\.0\\.0\\.1(:\\d+)?))|(jar:.*)$", Pattern.CASE_INSENSITIVE);
+
+		if (!allowedProtocolsAndHosts.matcher(url).find()) {
+			return false;
+		}
+
+		return true;
 	}
 
 }
