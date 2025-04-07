@@ -461,24 +461,54 @@ public class AutoExtract implements ActionListener {
     }
 
     private static void deleteOldLibs(File installDir) {
-        File libs = new File(installDir, "libs");
+        try {
+            // Resolve base directory to canonical form
+            File baseDir = new File(installDir, "libs").getCanonicalFile();
 
-        if (libs.exists()) {
-            File[] del = libs.listFiles(new FilenameFilter() {
-
-                public boolean accept(File dir, String name) {
-                    String test = name.toLowerCase();
-
-                    return test.endsWith(".jar") || test.endsWith(".dll");
-                }
+            if (!baseDir.exists() || !baseDir.isDirectory()) {
+                System.out.println("No 'libs' directory found at: " + baseDir.getAbsolutePath());
+                return;
+            }
+            File[] del = baseDir.listFiles((dir, name) -> {
+                String test = name.toLowerCase();
+                return test.endsWith(".jar") || test.endsWith(".dll");
             });
 
-            for (File d : del) {
-                if (!d.delete()) {
-                    System.err.println("Can't delete: " + d);
+            if (del != null) {
+                for (File file : del) {
+                    File target = file.getCanonicalFile();
+
+                    // 🛡️ Prevent deletion outside baseDir
+                    if (!target.getPath().startsWith(baseDir.getPath())) {
+                        System.err.println("Blocked path traversal attempt: " + target);
+                        continue;
+                    }
+
+                    if (!deleteRecursively(target)) {
+                        System.err.println("Can't delete: " + target.getAbsolutePath());
+                    } else {
+                        System.out.println("Deleted: " + target.getAbsolutePath());
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error while deleting old libs: " + e.getMessage());
+        }
+    }
+
+
+    public static boolean deleteRecursively(File file) {
+        if (file.isDirectory()) {
+            File[] children = file.listFiles();
+            if (children != null) {
+                for (File child : children) {
+                    if (!deleteRecursively(child)) {
+                        return false;
+                    }
                 }
             }
         }
+        return file.delete();
     }
 
     private static boolean deleteDir(File dir) {
