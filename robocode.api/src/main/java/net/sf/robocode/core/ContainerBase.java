@@ -13,7 +13,7 @@ package net.sf.robocode.core;
  * fixing the issue "Make instance a static final constant or non-public and provide accessors if needed"
  */
 public abstract class ContainerBase {
-	private static ContainerBase instance;
+	 static ContainerBase instance;
 
 	public static ContainerBase getInstance(){
 		return instance;
