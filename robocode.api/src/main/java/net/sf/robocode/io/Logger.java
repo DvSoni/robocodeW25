@@ -27,7 +27,7 @@ import java.io.PrintStream;
 public class Logger {
 	public static final PrintStream realOut = System.out;
 	public static final PrintStream realErr = System.err;
-	public static final boolean initialized = false;
+	public static boolean initialized = false;
 
 	private static IBattleListener logListener;
 	
